@@ -2,14 +2,19 @@
 #include "raylib.h"
 #include "imgui.h"
 #include "rlImGui.h"
-#include "extras/FA6FreeSolidFontData.h"
-#include "extras/IconsFontAwesome6.h"
 #include "assets/fonts.h"
+#include "application.h"
 
 constexpr float kDefaultFontSize = 10.0f;
 constexpr int kDefaultWindowWidth = 1280;
 constexpr int kDefaultWindowHeight = 800;
 
+/**
+ * @brief Load the main UI font and the icons font.
+ *
+ * The fonts are loaded from static memory (see assets/fonts.h)
+ * and are scaled according to the provided scale factor.
+ */
 void loadFonts(float scale)
 {
     if (scale <= 0.0f) {
@@ -49,6 +54,11 @@ void loadFonts(float scale)
     );
 }
 
+/**
+ * @brief Rescale the UI to match the provided DPI scale factor.
+ *
+ * @note This will also reload the fonts.
+ */
 void applyDpiScale(float scale)
 {
     auto& style = ImGui::GetStyle();
@@ -96,25 +106,17 @@ int main(int argc, char* argv[])
 
     rlImGuiSetup(true);
 
+    Application app;
+
     while (!WindowShouldClose())
     {
+        app.update();
 
         BeginDrawing();
         ClearBackground(DARKGRAY);
 
-        // Start the ImGui frame
         rlImGuiBegin();
-
-        // Create a simple ImGui window
-        ImGui::Begin("Hello, ImGui!");
-        ImGui::Text("This is a simple example of using ImGui with Raylib.");
-        if (ImGui::Button(ICON_FK_BOOK " Click Me"))
-        {
-            // Handle button click
-        }
-        ImGui::End();
-
-        // End the ImGui frame
+        app.render();
         rlImGuiEnd();
 
         EndDrawing();

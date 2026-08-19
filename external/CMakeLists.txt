@@ -37,6 +37,50 @@ target_include_directories(imgui PUBLIC
 )
 
 ##
+## implot
+##
+set(IMPLOT_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/implot)
+
+set(IMPLOT_SRC
+    ${IMPLOT_SRC_DIR}/implot.h
+    ${IMPLOT_SRC_DIR}/implot.cpp
+    ${IMPLOT_SRC_DIR}/implot_items.cpp
+    ${IMPLOT_SRC_DIR}/implot_internal.h
+)
+add_library(implot STATIC ${IMPLOT_SRC})
+
+target_include_directories(implot PUBLIC
+    ${IMPLOT_SRC_DIR}
+)
+
+target_link_libraries(implot PUBLIC
+    imgui
+)
+
+##
+## implot3d
+##
+set(IMPLOT3D_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/implot3d)
+
+set(IMPLOT3D_SRC
+    ${IMPLOT3D_SRC_DIR}/implot3d.h
+    ${IMPLOT3D_SRC_DIR}/implot3d.cpp
+    ${IMPLOT3D_SRC_DIR}/implot3d_items.cpp
+    ${IMPLOT3D_SRC_DIR}/implot3d_meshes.cpp
+    ${IMPLOT3D_SRC_DIR}/implot3d_internal.h
+)
+
+add_library(implot3d STATIC ${IMPLOT3D_SRC})
+
+target_include_directories(implot3d PUBLIC
+    ${IMPLOT3D_SRC_DIR}
+)
+
+target_link_libraries(implot3d PUBLIC
+    imgui
+)
+
+##
 ## rlImGui
 ##
 set(RLIMGUI_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rlImGui)
