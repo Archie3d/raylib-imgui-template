@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "rlImGui.h"
 #include "assets/fonts.h"
+#include "event_loop.h"
 #include "application.h"
 
 constexpr float kDefaultFontSize = 10.0f;
@@ -65,7 +66,7 @@ void applyDpiScale(float scale)
     ImGui::StyleColorsDark();
 
     style.ScaleAllSizes(scale);
-    style.WindowRounding = 6.0f * scale;
+    style.WindowRounding = 0.0f * scale;
     style.FrameRounding = 6.0f * scale;
     style.FrameBorderSize = 1.0f * scale;
     style.FontScaleDpi = 1.0f; // Fonts are already scaled during loading.
@@ -106,9 +107,10 @@ int main(int argc, char* argv[])
 
     rlImGuiSetup(true);
 
-    Application app;
+    EventLoop eventLoop;
+    Application app(eventLoop);
 
-    while (!WindowShouldClose())
+    while (!WindowShouldClose() && eventLoop.isRunning())
     {
         app.update();
 
@@ -126,5 +128,5 @@ int main(int argc, char* argv[])
     rlImGuiShutdown();
     CloseWindow();
 
-    return 0;
+    return eventLoop.getExitCode();
 }

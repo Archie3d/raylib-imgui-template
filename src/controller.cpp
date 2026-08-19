@@ -1,8 +1,9 @@
 #include "controller.h"
 
 
-Controller::Controller(model::Model& model)
-    : m_model(model)
+Controller::Controller(model::Model& model, EventLoop& eventLoop)
+    : m_model(model),
+      m_eventLoop(eventLoop)
 {
 }
 

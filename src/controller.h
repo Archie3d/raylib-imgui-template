@@ -3,11 +3,17 @@
 #include "event_loop.h"
 #include "model.h"
 
+/**
+ * @brief The controller drives the application logic.
+ *
+ * The controller is responsible for mutatting the model
+ * (which should happen on the main thread via the event loop).
+ */
 class Controller
 {
 public:
     Controller() = delete;
-    Controller(model::Model& model);
+    Controller(model::Model& model, EventLoop& eventLoop);
     ~Controller();
 
     /**
@@ -34,5 +40,5 @@ public:
 
 private:
     model::Model& m_model;
-    EventLoop m_eventLoop;
+    EventLoop& m_eventLoop;
 };

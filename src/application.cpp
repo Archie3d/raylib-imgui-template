@@ -3,9 +3,10 @@
 #include "assets/fonts.h"
 #include "application.h"
 
-Application::Application()
-    : m_model(),
-      m_controller(m_model)
+Application::Application(EventLoop& eventLoop)
+    : m_eventLoop(eventLoop),
+      m_model(),
+      m_controller(m_model, m_eventLoop)
 {
     m_windowSize = ImVec2(static_cast<float>(GetScreenWidth()),
                           static_cast<float>(GetScreenHeight()));
@@ -26,12 +27,36 @@ void Application::update()
 
 void Application::render()
 {
-    // Create a simple ImGui window
-    ImGui::Begin("Hello, ImGui!");
-    ImGui::Text("This is a simple example of using ImGui with Raylib.");
-    if (ImGui::Button(ICON_FK_BOOK " Click Me"))
-    {
-        // Handle button click
+    ImGuiWindowFlags windowFlags =
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoNavFocus |
+        ImGuiWindowFlags_MenuBar;
+
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+
+    // Main window
+    ImGui::Begin("##mainWindow", nullptr, windowFlags);
+
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem(ICON_FK_SIGN_OUT " Exit")) {
+                m_eventLoop.quit();
+            }
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
     }
+
+    ImGui::Text("This is a simple example of using ImGui with Raylib.");
+    if (ImGui::Button("Click me")) {
+        //
+    }
+
     ImGui::End();
 }

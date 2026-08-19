@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "event_loop.h"
 #include "model.h"
 #include "controller.h"
 
@@ -10,7 +11,8 @@
 class Application final
 {
 public:
-    Application();
+    Application() = delete;
+    Application(EventLoop& eventLoop);
     ~Application();
 
     /**
@@ -29,10 +31,9 @@ public:
      */
     void render();
 
-
-
 private:
-    model::Model m_model;              ///< The application model containing the state and data.
+    EventLoop& m_eventLoop;     ///< Reference to the event loop for scheduling tasks and handling events.
+    model::Model m_model;       ///< The application model containing the state and data.
     Controller m_controller;    ///< The controller responsible for handling user input and application logic.
     ImVec2 m_windowSize;        ///< The size of the application window.
 };
