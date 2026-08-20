@@ -145,9 +145,12 @@ int main(int argc, char* argv[])
     Application app(eventLoop);
 
     // Install GLFW window refresh callback to repaint the window when resizing.
+    // This blocks the main event loop on Windows, however
+#if defined(APPLE)
     auto* glfwWindow = glfwGetCurrentContext();
     glfwSetWindowUserPointer(glfwWindow, &app);
     glfwSetWindowRefreshCallback(glfwWindow, windowRefreshCallback);
+#endif
 
     while (!WindowShouldClose() && eventLoop.isRunning())
     {
