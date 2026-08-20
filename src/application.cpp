@@ -54,7 +54,9 @@ void Application::render()
     }
 
     ImGui::Text("This is a simple example of using ImGui with Raylib.");
-    if (ImGui::Button("Click me")) {
+
+
+    if (ImGui::Button("Click me", ImVec2(ImGui::GetContentRegionAvail().x, 0))) {
         //
     }
 

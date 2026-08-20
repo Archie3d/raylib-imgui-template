@@ -1,4 +1,4 @@
-#include <iostream>
+#include <cassert>
 #include "raylib.h"
 #include "imgui.h"
 #include "rlImGui.h"
@@ -9,6 +9,15 @@
 constexpr float kDefaultFontSize = 10.0f;
 constexpr int kDefaultWindowWidth = 1280;
 constexpr int kDefaultWindowHeight = 800;
+
+extern "C" {
+    struct GLFWwindow;
+    using GLFWwindowrefreshfun = void (*)(GLFWwindow*);
+    GLFWwindowrefreshfun glfwSetWindowRefreshCallback(GLFWwindow* window, GLFWwindowrefreshfun callback);
+    void glfwSetWindowUserPointer(GLFWwindow* window, void* pointer);
+    void* glfwGetWindowUserPointer(GLFWwindow* window);
+    GLFWwindow* glfwGetCurrentContext(void);
+}
 
 /**
  * @brief Load the main UI font and the icons font.
@@ -81,8 +90,35 @@ void applyDpiScale(float scale)
     loadFonts(scale);
 }
 
+void renderFrame(Application& app)
+{
+    app.update();
+
+    BeginDrawing();
+    ClearBackground(DARKGRAY);
+
+    rlImGuiBegin();
+    app.render();
+    rlImGuiEnd();
+
+    EndDrawing();
+}
+
+static void windowRefreshCallback(GLFWwindow* window)
+{
+    auto* app = static_cast<Application*>(glfwGetWindowUserPointer(window));
+    assert(app != nullptr && "Application pointer has not been set by glfwSetWindowUserPointer()");
+    renderFrame(*app);
+}
+
 int main(int argc, char* argv[])
 {
+#if defined(_DEBUG) || defined(DEBUG)
+    SetTraceLogLevel(LOG_DEBUG);
+#else
+    SetTraceLogLevel(LOG_WARNING);
+#endif
+
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI | FLAG_WINDOW_RESIZABLE);
     InitWindow(kDefaultWindowWidth, kDefaultWindowHeight, "Raylib + ImGui Template");
     SetTargetFPS(60);
@@ -97,8 +133,6 @@ int main(int argc, char* argv[])
     const auto dpiScale = GetWindowScaleDPI();
     applyDpiScale(dpiScale.y);
 
-    std::cout << "DPI Scale: " << dpiScale.x << ", " << dpiScale.y << std::endl;
-
     if (!IsWindowState(FLAG_WINDOW_HIGHDPI)) {
         io.DisplayFramebufferScale = ImVec2(dpiScale.x, dpiScale.y);
     }
@@ -110,18 +144,14 @@ int main(int argc, char* argv[])
     EventLoop eventLoop;
     Application app(eventLoop);
 
+    // Install GLFW window refresh callback to repaint the window when resizing.
+    auto* glfwWindow = glfwGetCurrentContext();
+    glfwSetWindowUserPointer(glfwWindow, &app);
+    glfwSetWindowRefreshCallback(glfwWindow, windowRefreshCallback);
+
     while (!WindowShouldClose() && eventLoop.isRunning())
     {
-        app.update();
-
-        BeginDrawing();
-        ClearBackground(DARKGRAY);
-
-        rlImGuiBegin();
-        app.render();
-        rlImGuiEnd();
-
-        EndDrawing();
+        renderFrame(app);
     }
 
     // Cleanup

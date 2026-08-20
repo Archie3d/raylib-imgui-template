@@ -32,3 +32,8 @@ target_link_libraries(${TARGET}
         implot3d
         rlimgui
 )
+
+target_compile_definitions(${TARGET}
+    PRIVATE
+        $<$<CONFIG:DEBUG>:DEBUG>
+)
